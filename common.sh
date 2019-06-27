@@ -24,9 +24,10 @@ declare -r reset=$(tput sgr0)
 # Color constants
 declare -r purple=$(tput setaf 171)
 declare -r red=$(tput setaf 1)
-declare -r green=$(tput setaf 76)
-declare -r tan=$(tput setaf 3)
-declare -r blue=$(tput setaf 38)
+declare -r green=$(tput setaf 2)
+declare -r yellow=$(tput setaf 3)
+declare -r blue=$(tput setaf 4)
+declare -r white=$(tput setaf 7)
 
 # Config file constants
 declare -r PASSWD_FILE=/etc/passwd
@@ -38,6 +39,10 @@ declare -r PASSWD_FILE=/etc/passwd
 
 function header() {
     printf "\n${bold}${purple}==========  %s  ==========${reset}\n" "$@"
+}
+
+function new_line() {
+    echo ""
 }
 
 function arrow() {
@@ -53,7 +58,7 @@ function error() {
 }
 
 function warn() {
-    printf "${tan}[ 🔔 ] %s${reset}\n" "$@"
+    printf "${yellow}[ 🔔 ] %s${reset}\n" "$@"
 }
 
 function underlined() {
@@ -66,6 +71,15 @@ function bold() {
 
 function note() {
     printf "${underline}${bold}${blue}Note:${reset} ${blue}%s${reset}\n" "$@"
+}
+
+function separator(){
+    local char="*"
+    local line
+    for i in $(seq 1 80); do
+        line="${line}${char}"
+    done
+    echo "${line}"
 }
 
 function banner_mid() {
@@ -84,6 +98,7 @@ function banner() {
 
 # header "Styles and formates"
 # arrow "This is arrowed statement."
+# new_line
 # success "Tests succeded."
 # error "Tests error."
 # warn "This is warning."
@@ -135,7 +150,7 @@ function die()
 {
     local m="$1"	# message
     local e=${2-1}	# default exit status 1
-    print_error $m
+    error "$m"
     exit $e
 }
 ##################################################################
@@ -196,7 +211,7 @@ function get_confirmation()
 {
     local msg=$1
     local confirm
-    read -p "${bold}$msg, confirm[${green}y/${red}n]?${reset} " confirm
+    read -p "${bold}$msg, confirm[${green}y${white}/${red}n${white}]?${reset} " confirm
     if [[ "$confirm" =~ ^([yY][eE][sS]|[yY])+$ ]]
     then
         return $TRUE
@@ -216,9 +231,10 @@ function get_confirmation()
 function must_confirm()
 {
     local msg=$1
-    if get_confirmation $msg; then
-        exit 0
+    if get_confirmation "$msg"; then
+        return
     fi
+    exit 0
 }
 ##################################################################
 
@@ -256,7 +272,7 @@ function type_exists()
 
 # where:
 #     -h  show this help text
-#     -s  set the s   eed value (default: 42)"
+#     -s  set the seed value (default: 42)"
 
 # seed=42
 # while getopts ':hs:' option; do
