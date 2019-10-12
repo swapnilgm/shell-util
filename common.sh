@@ -164,7 +164,7 @@ function die()
 # Return:
 #   output <- True or False
 # Usage:
-#   if is_user_exists; then
+#   if is_user_exists <username>; then
 #       some action
 #   else
 #       some other action
@@ -173,6 +173,22 @@ function is_user_exists()
 {
     local u="$1"
     grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
+}
+##################################################################
+# Purpose: Return true if groupt exists in /etc/group.
+# Arguments:
+#   $1 -> Groupname to check in /etc/group
+# Return:
+#   output <- True or False
+# Usage:
+#   if is_group_exists <groupname>; then
+#       some action
+#   else
+#       some other action
+#   fi
+function is_group_exists() {
+    local g="$1"
+    grep -q "^${g}" /etc/group && return $TRUE || return $FALSE
 }
 ##################################################################
 # Purpose: Test which OS the user runs
